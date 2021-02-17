@@ -61,7 +61,7 @@ object CertificateApiService {
   }
 
   def getUserDetails(userId: String)(implicit config: CollectionCompletePostProcessorConfig): util.Map[String, AnyRef] = {
-    val httpRequest = s"""{"request":{"filters":{"identifier":"${userId}"},"fields":["firstName", "lastName", "userName", "rootOrgName", "rootOrgId","maskedPhone"]}}"""
+    val httpRequest = s"""{"request":{"filters":{"identifier":"a817e746-36a6-4e05-b2ad-84f22769780e"},"fields":["firstName", "lastName", "userName", "rootOrgName", "rootOrgId","maskedPhone"]}}"""
     val httpResponse = httpUtil.post(config.learnerBasePath + config.userV1Search, httpRequest)
     if (httpResponse.status == 200) {
       println("User search success: " + httpResponse.body)
@@ -77,7 +77,7 @@ object CertificateApiService {
   }
 
   def readOrgKeys(rootOrgId: String)(implicit config: CollectionCompletePostProcessorConfig): util.Map[String, AnyRef] = {
-    val httpRequest = s"""{"request":{"organisationId":"${rootOrgId}"}}}"""
+    val httpRequest = s"""{"request":{"organisationId":"0126796199493140480"}}}"""
     val httpResponse = httpUtil.post(config.learnerBasePath + config.orgV1Read, httpRequest)
     if (httpResponse.status == 200) {
       println("Org read success: " + httpResponse.body)
