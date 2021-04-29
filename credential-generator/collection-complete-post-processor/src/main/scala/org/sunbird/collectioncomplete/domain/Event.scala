@@ -1,8 +1,8 @@
 package org.sunbird.collectioncomplete.domain
 
-import java.util
-
 import org.sunbird.job.domain.reader.JobRequest
+
+import scala.collection.JavaConverters
 import scala.collection.JavaConverters._
 
 class Event(eventMap: java.util.Map[String, Any])  extends JobRequest(eventMap) {
@@ -13,8 +13,8 @@ class Event(eventMap: java.util.Map[String, Any])  extends JobRequest(eventMap) 
 
   def courseId: String = readOrDefault[String]("edata.courseId", "")
 
-  def userIds: java.util.List[String] = readOrDefault[java.util.List[String]]("edata.userIds", new java.util.ArrayList[String]())
+  def userIds: java.util.List[String] = readOrDefault[List[String]]("edata.userIds", List[String]()).asJava
 
-  def eData: util.Map[String, AnyRef] = readOrDefault("edata", new util.HashMap[String, AnyRef]())
+  def eData: java.util.Map[String, AnyRef] = JavaConverters.mapAsJavaMap(readOrDefault[Map[String, AnyRef]]("edata", Map[String, AnyRef]()))
 
 }

@@ -20,7 +20,7 @@
             <version>${flink.version}</version>
             <type>jar</type>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.sunbird</groupId>
             <artifactId>activity-aggregate-updater</artifactId>
             <version>1.0.0</version>
@@ -61,7 +61,7 @@
             <artifactId>enrolment-reconciliation</artifactId>
             <version>1.0.0</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.sunbird</groupId>
             <artifactId>collection-complete-post-processor</artifactId>
@@ -70,22 +70,28 @@
         </dependency>
         <dependency>
             <groupId>org.sunbird</groupId>
-            <artifactId>asset-enrichment</artifactId>
+            <artifactId>collection-certificate-generator</artifactId>
             <version>1.0.0</version>
             <type>jar</type>
         </dependency>
+        <!--<dependency>
+            <groupId>org.sunbird</groupId>
+            <artifactId>asset-enrichment</artifactId>
+            <version>1.0.0</version>
+            <type>jar</type>
+        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>org.sunbird</groupId>-->
 <!--            <artifactId>asset-enrichment</artifactId>-->
 <!--            <version>1.0.0</version>-->
 <!--            <type>jar</type>-->
 <!--        </dependency>-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.sunbird</groupId>
             <artifactId>audit-history-indexer</artifactId>
             <version>1.0.0</version>
             <type>jar</type>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>
