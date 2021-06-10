@@ -133,4 +133,7 @@ class CertificateGeneratorConfig(override val config: Config) extends BaseJobCon
   val priorityValue = 1
   val userFeedCount = "user-feed-count"
   
+  
+  //
+  val failedtag: OutputTag[String] = OutputTag[String]("failed-events")
 }

@@ -14,7 +14,7 @@ import org.apache.flink.configuration.Configuration
 import org.apache.flink.streaming.api.functions.ProcessFunction
 import org.slf4j.LoggerFactory
 import org.sunbird.job.certgen.task.CertificateGeneratorConfig
-import org.sunbird.job.util.{CassandraUtil, HttpUtil, JSONUtil, ScalaJsonUtil}
+import org.sunbird.job.util.{CassandraUtil, HTTPResponse, HttpUtil, JSONUtil, ScalaJsonUtil}
 import org.sunbird.job.{BaseProcessFunction, Metrics}
 
 import scala.collection.JavaConverters._
@@ -128,13 +128,19 @@ class NotifierFunction(config: CertificateGeneratorConfig, httpUtil: HttpUtil, @
 
   private def getUserDetails(userId: String): Map[String, AnyRef] = {
     logger.info("getting user info for id {}", userId)
-    val httpResponse = httpUtil.get(config.learnerServiceBaseUrl + "/private/user/v1/read/" + userId)
+    Thread.sleep(50L)
+    val httpResponse = HTTPResponse(200, """{"id":".private.user.v1.read.85b48474-ef7e-47be-b301-8901a6cdd346","ver":"private","ts":"2021-06-09 05:36:00:005+0000","params":{"resmsgid":null,"msgid":"2564aa99-e2db-45dd-b828-0422821d6da9","err":null,"status":"success","errmsg":null},"responseCode":"OK","result":{"response":{"webPages":[],"maskedPhone":null,"tcStatus":null,"subject":[],"channel":"dikshapreprodcustodian","language":null,"updatedDate":"2021-03-12 04:18:18:911+0000","password":null,"managedBy":null,"flagsValue":2,"id":"85b48474-ef7e-47be-b301-8901a6cdd346","recoveryEmail":"","identifier":"85b48474-ef7e-47be-b301-8901a6cdd346","thumbnail":null,"profileVisibility":null,"updatedBy":"85b48474-ef7e-47be-b301-8901a6cdd346","accesscode":null,"locationIds":[],"registryId":null,"rootOrgId":"0126796199493140480","prevUsedEmail":"","firstName":"1612351465-54","profileLocation":[],"tncAcceptedOn":1613101923680,"allTncAccepted":{},"phone":"","dob":null,"grade":null,"currentLoginTime":null,"userType":"student","status":1,"lastName":null,"tncLatestVersion":"v27","gender":null,"roles":["PUBLIC"],"prevUsedPhone":"","stateValidated":false,"encEmail":"paFjjDIfL/FhDW8a4lyMvoXX6h4sjQGWOLg09YFEtGuqO2z7mOOsetmCeWtcXgAApqS89gcech2B\nAXVXpU5LfPGAaxmJf9ayLXfrC15jPAdGb1yEKt6FUXv+nL5wm2ZmUpKcwa0WpYc9AfjPPg5chD5A\ncxY9FTs76gIdQMsJk4w=","isDeleted":false,"organisations":[{"organisationId":"0126796199493140480","updatedBy":null,"addedByName":null,"addedBy":null,"roles":["PUBLIC"],"approvedBy":null,"updatedDate":null,"userId":"85b48474-ef7e-47be-b301-8901a6cdd346","approvaldate":null,"isDeleted":false,"hashTagId":"0126796199493140480","isRejected":null,"id":"0132084357786173445","position":null,"isApproved":null,"orgjoindate":"2021-02-03 12:57:16:794+0000","orgLeftDate":null}],"provider":null,"countryCode":null,"tncLatestVersionUrl":"https://dev-sunbird-temp.azureedge.net/portal/terms-and-conditions-v1.html","maskedEmail":"16***********@yopmail.com","tempPassword":null,"email":"16***********@yopmail.com","rootOrg":{"dateTime":null,"preferredLanguage":null,"keys":{},"approvedBy":null,"channel":"dikshapreprodcustodian","description":"Pre-prod Custodian Organization","updatedDate":null,"addressId":null,"organisationType":5,"orgType":null,"isTenant":true,"provider":null,"locationId":null,"orgCode":null,"theme":null,"id":"0126796199493140480","communityId":null,"isApproved":null,"email":null,"slug":"dikshapreprodcustodian","isSSOEnabled":null,"thumbnail":null,"orgName":"Pre-prod Custodian Organization","updatedBy":null,"locationIds":[],"externalId":null,"orgLocation":[],"isRootOrg":true,"rootOrgId":"0126796199493140480","approvedDate":null,"imgUrl":null,"homeUrl":null,"orgTypeId":null,"isDefault":null,"createdDate":"2019-01-18 09:48:13:428+0000","createdBy":"system","parentOrgId":null,"hashTagId":"0126796199493140480","noOfMembers":null,"status":null},"phoneVerified":false,"profileSummary":null,"tcUpdatedDate":null,"recoveryPhone":"","avatar":null,"userName":"161235146554_x5c2","userId":"85b48474-ef7e-47be-b301-8901a6cdd346","userSubType":null,"promptTnC":true,"emailVerified":true,"lastLoginTime":null,"createdDate":"2021-02-03 12:57:15:219+0000","framework":{"board":["CBSE"],"gradeLevel":["Class 1"],"id":["NCF"],"medium":["Bengali"],"subject":["Accountancy Auditing"]},"createdBy":null,"profileUserType":{"type":"student"},"encPhone":null,"location":null,"tncAcceptedVersion":"v23"}}}""")
+    val response = ScalaJsonUtil.deserialize[Map[String, AnyRef]](httpResponse.body)
+    val result = response.getOrElse("result", Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]].getOrElse("response", Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]]
+    result
+    
+    /*val httpResponse = httpUtil.get(config.learnerServiceBaseUrl + "/private/user/v1/read/" + "85b48474-ef7e-47be-b301-8901a6cdd346")
     if (httpResponse.status == 200) {
       logger.info("user search response status {} :: {} ", httpResponse.status, httpResponse.body)
       val response = ScalaJsonUtil.deserialize[Map[String, AnyRef]](httpResponse.body)
       val result = response.getOrElse("result", Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]].getOrElse("response", Map[String, AnyRef]()).asInstanceOf[Map[String, AnyRef]]
       result
-    } else throw new Exception(s"Error while reading user for notification for userId: ${userId}")
+    } else throw new Exception(s"Error while reading user for notification for userId: ${userId}")*/
   }
 
   override def metricsList(): List[String] = {

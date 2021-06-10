@@ -66,7 +66,9 @@ class CertificateGeneratorFunction(config: CertificateGeneratorConfig, httpUtil:
     } catch {
       case e: Exception =>
         metrics.incCounter(config.failedEventCount)
-        throw new InvalidEventException(e.getMessage, Map("partition" -> event.partition, "offset" -> event.offset), e)
+        logger.error(s"Error while processing message for Partition: ${event.partition} and Offset: ${event.offset}")
+        context.output(config.failedtag, ScalaJsonUtil.serialize(event))
+        //throw new InvalidEventException(e.getMessage, Map("partition" -> event.partition, "offset" -> event.offset), e)
     }
   }
 

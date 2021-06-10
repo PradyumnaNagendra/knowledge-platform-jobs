@@ -7,7 +7,8 @@ import com.typesafe.config.ConfigFactory
 import org.apache.flink.api.common.typeinfo.TypeInformation
 import org.apache.flink.api.java.typeutils.TypeExtractor
 import org.apache.flink.api.java.utils.ParameterTool
-import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
+import org.apache.flink.streaming.api.CheckpointingMode
+import org.apache.flink.streaming.api.scala.{OutputTag, StreamExecutionEnvironment}
 import org.sunbird.incredible.StorageParams
 import org.sunbird.incredible.processor.store.StorageService
 import org.sunbird.job.certgen.domain.Event
@@ -27,6 +28,9 @@ class CertificateGeneratorStreamTask(config: CertificateGeneratorConfig, kafkaCo
 
     val source = kafkaConnector.kafkaJobRequestSource[Event](config.kafkaInputTopic)
 
+    env.getCheckpointConfig.setCheckpointTimeout(900000L)
+    env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
+
     val processStreamTask = env.addSource(source)
       .name(config.certificateGeneratorConsumer)
       .uid(config.certificateGeneratorConsumer).setParallelism(config.kafkaConsumerParallelism)
@@ -35,6 +39,11 @@ class CertificateGeneratorStreamTask(config: CertificateGeneratorConfig, kafkaCo
       .name("collection-certificate-generator")
       .uid("collection-certificate-generator")
       .setParallelism(config.parallelism)
+
+    processStreamTask.getSideOutput(config.failedtag)
+      .addSink(kafkaConnector.kafkaStringSink("cert.failed.topic"))
+      .name("collection-certificate-generator-failed-events-sink")
+      .uid("collection-certificate-generator-failed-events-sink")
 
     processStreamTask.getSideOutput(config.auditEventOutputTag)
       .addSink(kafkaConnector.kafkaStringSink(config.kafkaAuditEventTopic))
@@ -45,13 +54,13 @@ class CertificateGeneratorStreamTask(config: CertificateGeneratorConfig, kafkaCo
       .process(new NotifierFunction(config, httpUtil))
       .name("notifier")
       .uid("notifier")
-      .setParallelism(1)
+      .setParallelism(8)
 
     processStreamTask.getSideOutput(config.userFeedOutputTag)
       .process(new CreateUserFeedFunction(config, httpUtil))
       .name("user-feed")
       .uid("user-feed")
-      .setParallelism(1)
+      .setParallelism(8)
 
 
     env.execute(config.jobName)

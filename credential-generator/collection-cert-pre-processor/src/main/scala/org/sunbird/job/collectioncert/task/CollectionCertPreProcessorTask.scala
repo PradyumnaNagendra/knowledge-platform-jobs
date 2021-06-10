@@ -18,7 +18,10 @@ class CollectionCertPreProcessorTask(config: CollectionCertPreProcessorConfig, k
         implicit val eventTypeInfo: TypeInformation[Event] = TypeExtractor.getForClass(classOf[Event])
         implicit val stringTypeInfo: TypeInformation[String] = TypeExtractor.getForClass(classOf[String])
         val source = kafkaConnector.kafkaJobRequestSource[Event](config.kafkaInputTopic)
-
+        
+        env.getCheckpointConfig.setCheckpointTimeout(720000L)
+        
+        
         val progressStream =
             env.addSource(source).name(config.certificatePreProcessorConsumer)
               .uid(config.certificatePreProcessorConsumer).setParallelism(config.kafkaConsumerParallelism)
